@@ -22,7 +22,15 @@ def _get_client() -> Client:
     global _client
     if _client is None:
         logger.info("Connecting to Hugging Face Space '%s'", HF_SPACE_ID)
-        _client = Client(HF_SPACE_ID, hf_token=HF_TOKEN)
+        try:
+            _client = Client(HF_SPACE_ID, hf_token=HF_TOKEN)
+            logger.info("Successfully connected to Hugging Face Space")
+        except Exception as e:
+            logger.error("Failed to connect to Hugging Face Space: %s", str(e))
+            raise RuntimeError(
+                f"Cannot connect to Hugging Face Space '{HF_SPACE_ID}'. "
+                f"Please check if the Space is running and accessible. Error: {str(e)}"
+            ) from e
     return _client
 
 
@@ -51,7 +59,12 @@ async def predict_with_hf(
     """
     Upload the image to the Hugging Face Space and return (label, probability).
     """
-    client = _get_client()
+    try:
+        client = _get_client()
+    except Exception as e:
+        logger.error("Failed to get Hugging Face client: %s", str(e))
+        raise
+    
     suffix = Path(filename or "upload.png").suffix or ".png"
 
     def _call_hf() -> Tuple[str, float]:
@@ -61,10 +74,17 @@ async def predict_with_hf(
             tmp_name = tmp.name
 
         try:
+            logger.info("Calling Hugging Face Space API: %s", HF_API_NAME)
             result = client.predict(
                 api_name=HF_API_NAME,
                 image=gradio_file(tmp_name),
             )
+            logger.info("Received result from Hugging Face Space")
+        except Exception as e:
+            logger.error("Hugging Face prediction failed: %s", str(e))
+            raise RuntimeError(
+                f"Prediction failed on Hugging Face Space. Error: {str(e)}"
+            ) from e
         finally:
             try:
                 os.remove(tmp_name)
