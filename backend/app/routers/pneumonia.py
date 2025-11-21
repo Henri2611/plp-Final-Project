@@ -5,12 +5,12 @@ from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from app.schemas.predict_schema import PredictionResponse
 from app.services.hf_client import predict_with_hf
 
-router = APIRouter(prefix="/predict", tags=["Pneumonia"])
+router = APIRouter(tags=["Pneumonia"])
 logger = logging.getLogger(__name__)
 
 
 @router.post(
-    "",
+    "/predict",
     response_model=PredictionResponse,
     summary="Predict pneumonia from a chest X-ray",
 )

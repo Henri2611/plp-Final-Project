@@ -28,6 +28,17 @@ def create_app() -> FastAPI:
     # Routers keep the main file clean and ready for more endpoints.
     app.include_router(pneumonia_router, prefix="/api")
 
+    @app.get("/", tags=["Root"])
+    async def root() -> dict[str, str]:
+        """Root endpoint with API information."""
+        return {
+            "message": "Pneumonia Detection API",
+            "version": "1.0.0",
+            "docs": "/docs",
+            "health": "/health",
+            "predict": "/api/predict",
+        }
+
     @app.get("/health", tags=["Health"])
     async def health_check() -> dict[str, str]:
         """Lightweight health probe used by monitors or container platforms."""
