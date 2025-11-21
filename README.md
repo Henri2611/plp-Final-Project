@@ -1,4 +1,16 @@
 # Pneumonia X-ray Detection Web App
+**Live Demo:** https://your-demo-url.com  
+
+---
+
+##  Introduction  
+This project is a **full-stack medical diagnostic dashboard** designed for doctors. The system allows clinicians to upload chest X-ray images, which are then analyzed using an AI model hosted on **Hugging Face Spaces**.  
+
+A **FastAPI backend** proxies image uploads to the AI model, and a **React + Vite + Tailwind** frontend provides a clean medical dashboard UI to display results, history, and follow-up planning.
+
+This application removes the need for local ML model deployment, while delivering fast and reliable medical predictions.
+
+---
 
 End-to-end doctor-facing dashboard powered by:
 
