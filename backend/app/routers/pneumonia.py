@@ -23,17 +23,33 @@ async def predict(file: UploadFile = File(...)) -> PredictionResponse:
         )
 
     try:
+        logger.info("Received prediction request for file: %s", file.filename)
         image_bytes = await file.read()
+        logger.info("Read %d bytes from uploaded file", len(image_bytes))
+        
         label, probability = await predict_with_hf(
             image_bytes=image_bytes,
             filename=file.filename,
             content_type=file.content_type,
         )
+        logger.info("Prediction successful: %s (%.2f%%)", label, probability * 100)
         return PredictionResponse(prediction=label, probability=probability)
-    except Exception as exc:  # pragma: no cover - general safety net
-        logger.exception("Prediction failed")
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
+    except RuntimeError as exc:
+        # RuntimeError from hf_client with descriptive message
+        logger.error("Prediction failed with RuntimeError: %s", str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=str(exc),
+        ) from exc
+    except Exception as exc:
+        # Catch-all for unexpected errors
+        logger.exception("Unexpected error during prediction")
+        error_msg = f"Prediction failed: {type(exc).__name__}: {str(exc)}"
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Unable to run prediction. Check server logs for details.",
+            detail=error_msg,
         ) from exc
 
