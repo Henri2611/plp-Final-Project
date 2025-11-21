@@ -33,6 +33,12 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # Health check endpoint (defined early, before catch-all routes)
+    @app.get("/health", tags=["Health"])
+    async def health_check() -> dict[str, str]:
+        """Lightweight health probe used by monitors or container platforms."""
+        return {"status": "ok"}
+
     # Routers keep the main file clean and ready for more endpoints.
     app.include_router(pneumonia_router, prefix="/api")
 
@@ -52,16 +58,15 @@ def create_app() -> FastAPI:
         
         @app.get("/{full_path:path}")
         async def serve_frontend(full_path: str):
-            """Serve React app for all non-API routes."""
-            # Don't serve frontend for API routes or FastAPI endpoints
-            if full_path.startswith("api") or full_path in ["docs", "openapi.json", "health", "assets"]:
-                from fastapi import HTTPException
-                raise HTTPException(status_code=404, detail="Not found")
-            
-            # Serve index.html for all other routes (React Router handles routing)
+            """
+            Catch-all route to serve React app for client-side routing.
+            This should NOT match /health, /api/*, /docs, etc. as they are defined earlier.
+            """
+            # Serve index.html for all routes (React Router handles client-side routing)
             index_path = static_dir / "index.html"
             if index_path.exists():
                 return FileResponse(str(index_path))
+            
             from fastapi import HTTPException
             raise HTTPException(status_code=404, detail="Frontend not found")
     else:
@@ -77,11 +82,6 @@ def create_app() -> FastAPI:
                 "predict": "/api/predict",
                 "note": "Frontend not built. Run 'npm run build' in frontend/",
             }
-
-    @app.get("/health", tags=["Health"])
-    async def health_check() -> dict[str, str]:
-        """Lightweight health probe used by monitors or container platforms."""
-        return {"status": "ok"}
 
     return app
 
