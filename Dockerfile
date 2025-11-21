@@ -7,13 +7,14 @@ FROM node:18-alpine AS frontend-builder
 
 WORKDIR /app/frontend
 
-# Copy package files
-COPY frontend/package.json frontend/package-lock.json* ./
+# Copy package files first
+COPY frontend/package.json frontend/package-lock.json ./
 
 # Install dependencies
-RUN npm ci
+# Using npm install instead of npm ci to avoid permission issues
+RUN npm install --no-optional --legacy-peer-deps
 
-# Copy frontend source
+# Copy all frontend source files
 COPY frontend/ ./
 
 # Build arguments for API URL (defaults to relative path for same-origin)
