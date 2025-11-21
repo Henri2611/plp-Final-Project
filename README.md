@@ -1,5 +1,5 @@
 # Pneumonia X-ray Detection Web App
-**Live Demo:** https://your-demo-url.com  
+**Live Demo:** https://pneumonia-detection-app-6l8x.onrender.com/
 
 ---
 
