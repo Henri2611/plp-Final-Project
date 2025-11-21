@@ -23,8 +23,30 @@ def _get_client() -> Client:
     if _client is None:
         logger.info("Connecting to Hugging Face Space '%s'", HF_SPACE_ID)
         try:
-            _client = Client(HF_SPACE_ID, hf_token=HF_TOKEN)
+            # Try with 'token' parameter (newer gradio_client versions)
+            if HF_TOKEN:
+                _client = Client(HF_SPACE_ID, token=HF_TOKEN)
+            else:
+                _client = Client(HF_SPACE_ID)
             logger.info("Successfully connected to Hugging Face Space")
+        except TypeError as e:
+            # Fallback for older versions that might use 'hf_token'
+            if "token" in str(e) and HF_TOKEN:
+                logger.info("Trying legacy 'hf_token' parameter...")
+                try:
+                    _client = Client(HF_SPACE_ID, hf_token=HF_TOKEN)
+                    logger.info("Successfully connected using legacy parameter")
+                except Exception as e2:
+                    logger.error("Legacy connection also failed: %s", str(e2))
+                    raise RuntimeError(
+                        f"Cannot connect to Hugging Face Space '{HF_SPACE_ID}'. "
+                        f"Please check if the Space is running and accessible. Error: {str(e2)}"
+                    ) from e2
+            else:
+                raise RuntimeError(
+                    f"Cannot connect to Hugging Face Space '{HF_SPACE_ID}'. "
+                    f"Please check if the Space is running and accessible. Error: {str(e)}"
+                ) from e
         except Exception as e:
             logger.error("Failed to connect to Hugging Face Space: %s", str(e))
             raise RuntimeError(
