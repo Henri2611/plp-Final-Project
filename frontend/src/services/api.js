@@ -5,7 +5,7 @@ const api = axios.create({
 });
 
 /**
- * Send an X-ray image to the FastAPI server for prediction.
+ * Send an X-ray image to the FastAPI proxy which calls Hugging Face.
  * @param {File} file
  * @returns {Promise<{prediction: string, probability: number}>}
  */

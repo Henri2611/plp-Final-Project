@@ -1,20 +1,31 @@
 # Pneumonia Detection API
 
-FastAPI service that wraps a PyTorch model to classify chest X-rays.
+FastAPI proxy that forwards image uploads to a Hugging Face Gradio Space and
+returns the AI verdict to the React dashboard.
 
 ## Project layout
 
 ```
 backend/
 ├─ app/
-│  ├─ main.py              # FastAPI factory + CORS + router wiring
-│  ├─ routers/pneumonia.py # /api/predict endpoint
-│  ├─ predict.py           # Model loading + inference helpers
-│  ├─ utils/preprocessing.py
+│  ├─ main.py                  # FastAPI factory + CORS + router wiring
+│  ├─ routers/pneumonia.py     # /api/predict endpoint
+│  ├─ services/hf_client.py    # Hugging Face Space client
 │  └─ schemas/predict_schema.py
 ├─ requirements.txt
 └─ README.md
 ```
+
+## Environment variables
+
+| Variable         | Default                         | Description                                   |
+| ---------------- | ------------------------------- | --------------------------------------------- |
+| `HF_SPACE_ID`    | `Henri4679/pneumonia-xray`      | Hugging Face Space identifier                 |
+| `HF_API_NAME`    | `/predict`                      | Gradio API name exposed by the Space          |
+| `HF_API_TOKEN`   | *(empty)*                       | Optional HF token for private Spaces          |
+| `UVICORN_PORT`   | `8000` (set via CLI)            | Port when running locally/hosting             |
+
+Set these in `.env` or your hosting provider’s dashboard.
 
 ## Setup
 
@@ -24,25 +35,25 @@ python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
-# Place your TorchScript model at backend/models/pneumonia_model.pt
-# or set MODEL_PATH to point to the file.
+# Optional: export HF creds
+set HF_SPACE_ID=Henri4679/pneumonia-xray
+set HF_API_TOKEN=hf_xxx
 ```
 
 ## Run locally
 
 ```bash
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --port 8000
 ```
 
-API will be available at `http://localhost:8000`. Interactive docs live at
-`http://localhost:8000/docs`.
+API lives at `http://localhost:8000`, docs at `http://localhost:8000/docs`.
 
 ## Prediction flow
 
-1. React frontend uploads an X-ray via `multipart/form-data`.
-2. `preprocess_image` resizes, normalizes, and batches the tensor.
-3. `Predictor` reuses the cached TorchScript model to avoid reloads.
-4. Response returns:
+1. React uploads an X-ray to `POST /api/predict`.
+2. FastAPI streams the bytes to the configured Hugging Face Space using
+   `gradio_client`.
+3. The Space returns the probability distribution; the proxy normalizes it to:
 
 ```json
 {
@@ -51,7 +62,6 @@ API will be available at `http://localhost:8000`. Interactive docs live at
 }
 ```
 
-Adjust `predict.py` if you need a different label mapping or threshold. To
-support new models, create an additional router + predictor module and include
-it in `main.py`.
+You can swap the Space ID/API name without touching the frontend. If you later
+host multiple models, add more routers that call different Spaces.
 
