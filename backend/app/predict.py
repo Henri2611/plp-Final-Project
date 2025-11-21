@@ -2,6 +2,14 @@
 Utilities that keep all model-loading and inference logic in one place.
 This module exposes a small Predictor class so we can easily swap the
 underlying PyTorch model (or even use multiple models) in the future.
+
+NOTE: This module is currently NOT USED in production.
+The application uses the Hugging Face client (services/hf_client.py) instead.
+This code is kept for future local inference support or fallback.
+To use this instead of HF:
+1. Uncomment torch/torchvision/Pillow in requirements.txt
+2. Add your model.pt file to backend/models/
+3. Update routers/pneumonia.py to use Predictor instead of predict_with_hf
 """
 
 from __future__ import annotations
@@ -103,9 +111,14 @@ class VGG19(nn.Module):
         return x
 
 def _get_model_path() -> Path:
+    """
+    Get the model path from environment or use default relative path.
+    NOTE: This model is currently NOT USED as the app uses Hugging Face client.
+    This code is kept for future local inference support.
+    """
     model_path = os.environ.get(
         "MODEL_PATH",
-        "C:/Users/Administrator/Documents/plp/AI for S.E/pneumonia/backend/models/model.pt",
+        str(Path(__file__).parent.parent / "models" / "model.pt"),
     )
     return Path(model_path)
 

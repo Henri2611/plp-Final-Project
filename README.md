@@ -115,18 +115,31 @@ Then open `http://localhost:8000` in your browser to see the full app.
 
 ### Deploy to Render with Docker
 
+#### Option 1: Using render.yaml (Recommended - One-Click Deploy)
+
+1. **Push your code to GitHub** (make sure .gitignore is working)
+2. **Go to Render Dashboard** → New → Blueprint
+3. **Connect your repository** and select the branch
+4. **Render will auto-detect `render.yaml`** and configure everything
+5. **Set `HF_API_TOKEN`** in the dashboard (if your Hugging Face Space is private)
+6. **Click "Apply"** - Done! Your app will be live at the provided URL
+
+#### Option 2: Manual Configuration
+
 1. **Create a new Web Service** in Render
 2. **Connect your GitHub repository**
 3. **Settings:**
    - **Environment:** Docker
    - **Root Directory:** (leave empty - Dockerfile is in root)
    - **Dockerfile Path:** `Dockerfile`
-   - **Docker Context:** (leave empty)
+   - **Docker Context:** `.` (current directory)
 4. **Environment Variables:**
    - `HF_SPACE_ID` = `Henri4679/pneumonia-xray`
    - `HF_API_NAME` = `/predict`
    - `HF_API_TOKEN` = (your token, or leave blank if Space is public)
-5. **Deploy** - Render will build and serve both frontend and backend!
+   - `PORT` = `8000` (Render provides this automatically)
+5. **Health Check Path:** `/health`
+6. **Deploy** - Render will build and serve both frontend and backend!
 
 The Dockerfile:
 

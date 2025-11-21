@@ -22,9 +22,12 @@ def create_app() -> FastAPI:
     )
 
     # Allow the React frontend (and future apps) to call this API.
+    # SECURITY NOTE: In production, replace "*" with specific allowed origins for better security
+    # For Render deployment with same-origin serving, CORS is not strictly needed
+    # Example: allow_origins=["https://your-app.onrender.com", "http://localhost:5173"]
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],  # In production replace with the actual frontend origin.
+        allow_origins=["*"],  # TODO: Replace with specific origins in production
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
