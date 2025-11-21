@@ -1,7 +1,8 @@
 import axios from "axios";
 
+// Use relative path when served from same origin, or env var if set
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
+  baseURL: import.meta.env.VITE_API_URL || "/api",
 });
 
 /**

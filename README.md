@@ -93,6 +93,52 @@ point `VITE_API_URL` to the hosted FastAPI base URL.
 
 ---
 
+## Docker Deployment (Full Stack - Recommended)
+
+Deploy both frontend and backend together in a single container:
+
+### Build and Run Locally
+
+```bash
+# Build the Docker image
+docker build -t pneumonia-app .
+
+# Run the container
+docker run -p 8000:8000 \
+  -e HF_SPACE_ID=Henri4679/pneumonia-xray \
+  -e HF_API_NAME=/predict \
+  -e HF_API_TOKEN=your_token_here \
+  pneumonia-app
+```
+
+Then open `http://localhost:8000` in your browser to see the full app.
+
+### Deploy to Render with Docker
+
+1. **Create a new Web Service** in Render
+2. **Connect your GitHub repository**
+3. **Settings:**
+   - **Environment:** Docker
+   - **Root Directory:** (leave empty - Dockerfile is in root)
+   - **Dockerfile Path:** `Dockerfile`
+   - **Docker Context:** (leave empty)
+4. **Environment Variables:**
+   - `HF_SPACE_ID` = `Henri4679/pneumonia-xray`
+   - `HF_API_NAME` = `/predict`
+   - `HF_API_TOKEN` = (your token, or leave blank if Space is public)
+5. **Deploy** - Render will build and serve both frontend and backend!
+
+The Dockerfile:
+
+- Builds the React frontend in Stage 1
+- Sets up Python backend in Stage 2
+- Copies built frontend to backend/static
+- FastAPI serves both the API (`/api/*`) and frontend (`/`)
+
+**Note:** The frontend uses relative paths (`/api`) so it automatically works when served from the same origin as the backend.
+
+---
+
 ## Deployment outline
 
 1. **Backend:** Deploy `backend/` to Render/Railway/Fly (or any container host).
