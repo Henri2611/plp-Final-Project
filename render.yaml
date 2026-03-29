@@ -1,0 +1,27 @@
+services:
+  # Web service for the full-stack application (frontend + backend)
+  - type: web
+    name: pneumonia-detection-app
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free  # Change to starter/standard for production
+    envVars:
+      - key: HF_SPACE_ID
+        value: Henri4679/pneumonia-xray
+      - key: HF_API_NAME
+        value: /predict
+      - key: HF_API_TOKEN
+        sync: false  # Set this in Render dashboard if Space is private
+      - key: PORT
+        value: 8000
+      - key: PYTHONUNBUFFERED
+        value: 1
+    healthCheckPath: /health
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - backend/**
+        - frontend/**
+        - Dockerfile
+        - .dockerignore

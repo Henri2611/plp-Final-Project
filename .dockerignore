@@ -59,8 +59,8 @@ backend/models/*.pt
 backend/models/*.pth
 
 # Documentation
-README.md
-*.md
+# README.md  # Commented out - might be useful for documentation in container
+# *.md       # Commented out - might be useful for documentation in container
 
 # Docker
 Dockerfile

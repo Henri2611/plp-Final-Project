@@ -1,26 +1,129 @@
-# Virtual environments
-.venv
-venv/
-env/
-ENV/
-
 # Python
-__pycache__
-*.pyc
-*.pyo
-*.pyd
+__pycache__/
 *.py[cod]
-cd *$py.class
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
 
-# ML Models
-*.pt
-*.pth
-*.h5
-*.pkl
-*.onnx
-models/*.pt
-models/*.pth
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.virtualenv/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pytest
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm
+.eslintcache
+.node_repl_history
+*.tgz
+.yarn-integrity
+
+# Frontend build outputs
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/.cache/
 
 # Environment variables
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# ML Models (large files - use Git LFS or external storage)
+*.pt
+*.pth
+*.onnx
+*.pb
+*.h5
+*.pkl
+models/*.pt
+models/*.pth
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+.~lock.*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Secrets
+*.key
+*.pem
+*.crt
+secrets/

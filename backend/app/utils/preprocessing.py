@@ -2,6 +2,11 @@
 Image preprocessing helpers.
 Keeping transformations decoupled from the router makes it trivial to plug in
 different pipelines for other modalities or models.
+
+NOTE: This module is currently NOT USED in production.
+The application uses the Hugging Face client which handles preprocessing internally.
+This code is kept for future local inference support.
+To use: uncomment torch/torchvision/Pillow in requirements.txt
 """
 
 from __future__ import annotations
